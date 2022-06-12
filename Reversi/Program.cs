@@ -9,10 +9,30 @@ namespace Reversi
     class Program
     {
         static string[,] gameTable = new string[8, 8];
+        static int x, y;
+        static string[] jatekos = new string[] { "X", "O" };
+        static int k = 0;
         static void Main(string[] args)
         {
             startOfTheGame();
-            writeOut();
+            
+            do
+            {
+                writeOut();
+                Console.WriteLine("Hova rajzolsz?");
+                Console.WriteLine("A(z) " + jatekos[k % 2] + " 1. koordinátája: ");
+                x = int.Parse(Console.ReadLine());
+                Console.WriteLine("A(z) " + jatekos[k % 2] + " 2. koordinátája: ");
+                y = int.Parse(Console.ReadLine());
+                                                                
+                gameTable[x, y] = jatekos[k % 2];
+                putSomething(x, y);
+                k++;
+                
+                Console.Clear();
+
+            } while(!isOver());
+
             Console.ReadLine();
 
         }
@@ -41,17 +61,54 @@ namespace Reversi
                 }
                 Console.WriteLine();
             }
-        }
-        
-        private static void putSymbol(int x, int y, string character)
+        } 
+       
+        private static bool Coloring(string [,] matrix, int x, int y, int iranyX, int iranyY)
         {
-            gameTable[x, y] = character;
-        }
+            int x2 = x + iranyX;
+            int y2 = y + iranyY;
 
-        private static bool canPutThere()
-        {
-            
+            while (x2 >= 0 && x2 < matrix.GetLength(0) - 1 && y2 >= 0 && y2 < matrix.GetLength(1) - 1 && matrix[x2, y2] == jatekos[(k + 1) % 2])
+            { 
+                x2 += iranyX;
+                y2 += iranyY;
+            }
+
+            if (matrix[x2, y2] == jatekos[k % 2])
+            {
+                x2 -= iranyX;
+                y2 -= iranyY;
+
+                while (y2 != y || x2 != x)
+                {
+                    matrix[x2, y2] = jatekos[k % 2];
+                    x2 -= iranyX;
+                    y2 -= iranyY;
+                    
+                }
+                return true;
+            }
+
             return false;
         }
+
+        private static void putSomething(int x, int y)
+        {
+            Coloring(gameTable, x, y, 1, 0);
+            Coloring(gameTable, x, y, -1, 0);
+            Coloring(gameTable, x, y, 1, 1);
+            Coloring(gameTable, x, y, -1, -1);
+            Coloring(gameTable, x, y, 1, -1);
+            Coloring(gameTable, x, y, -1, 1);
+            Coloring(gameTable, x, y, 0, 1);
+            Coloring(gameTable, x, y, 0, -1);
+        }
+        private static bool isOver()
+        {
+                        
+            return false;
+        }
+        //Kell egy függvény, ami azt nézi, hogy az adott játékos tud-e rakni bárhova, vége a játéknak, ha egyik játékos sem tud rakni
     }
+    
 }
